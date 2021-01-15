@@ -1,3 +1,4 @@
 db.host: localhost:5432
 db.username: postgres
 db.password: changeme
+db.database: jaeger
