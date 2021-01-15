@@ -27,6 +27,7 @@ func NewStore(conf *Configuration, logger hclog.Logger) (*Store, func() error, e
 		Addr:     conf.Host,
 		User:     conf.Username,
 		Password: conf.Password,
+		Database: conf.Database,
 	})
 
 	reader := NewReader(db, logger)
