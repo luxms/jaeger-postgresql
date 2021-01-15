@@ -10,6 +10,7 @@ const (
 	flagHost     = dbPrefix + "host"
 	flagUsername = dbPrefix + "username"
 	flagPassword = dbPrefix + "password"
+	flagDatabase = dbPrefix + "database"
 )
 
 // Configuration describes the options to customize the storage behavior
@@ -18,10 +19,9 @@ type Configuration struct {
 	Host     string `yaml:"host"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+	Database string `yaml:"database"`
 
 	/*
-		Database string `yaml:"database"`
-
 		// Network type, either tcp or unix.
 		// Default is tcp.
 		Network string `yaml:"network"`
@@ -96,5 +96,9 @@ func (c *Configuration) InitFromViper(v *viper.Viper) {
 	c.Password = v.GetString(flagPassword)
 	if len(c.Password) == 0 {
 		c.Password = "changeme"
+	}
+	c.Database = v.GetString(flagDatabase)
+	if len(c.Database) == 0 {
+		c.Database = "jaeger"
 	}
 }
