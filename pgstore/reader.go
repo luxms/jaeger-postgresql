@@ -185,13 +185,19 @@ func (r *Reader) FindTraceIDs(ctx context.Context, query *spanstore.TraceQueryPa
 // GetDependencies returns all inter-service dependencies
 func (r *Reader) GetDependencies(endTs time.Time, lookback time.Duration) (ret []model.DependencyLink, err error) {
 	err = r.db.Model((*SpanRef)(nil)).
-		ColumnExpr("source_spans.service_name as parent").
-		ColumnExpr("child_spans.service_name as child").
-		ColumnExpr("count(*) as call_count").
-		Join("JOIN spans AS source_spans ON source_spans.id = span_ref.source_span_id").
+		ColumnExpr("source_spans.service_id AS parent").
+		ColumnExpr("source_service.service_name AS parent_name").
+		ColumnExpr("child_spans.service_id AS child").
+		ColumnExpr("child_service.service_name AS child_name").
+		ColumnExpr("count(*) AS call_count").
+		Join("JOIN spans AS source_spans ON source_spans.id = span_ref.id").
+		Join("JOIN services AS source_service ON source_service.id = source_spans.service_id").
 		Join("JOIN spans AS child_spans ON child_spans.id = span_ref.child_span_id").
-		Group("source_spans.service_name").
-		Group("child_spans.service_name").
+		Join("JOIN services AS child_service ON child_service.id = source_spans.service_id").
+		Group("source_spans.service_id").
+		Group("source_service.service_name").
+		Group("child_spans.service_id").
+		Group("child_service.service_name").
 		Select(&ret)
 
 	return ret, err
